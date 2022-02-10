@@ -1,4 +1,4 @@
-#!/home/titouan/delivery/BotDiscordBouygues/Bouygues/bin/python3
+#!/home/titouan/delivery/BotDiscordBouygues/.env/bin/python3.6
 # -*- coding: utf-8 -*-
 import re
 import sys
