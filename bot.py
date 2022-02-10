@@ -1,5 +1,18 @@
+
 import discord
 
-client = discord.Client()
+class MyClient(discord.Client):
+    async def on_ready(self):
+        print(f'Logged in as {self.user} (ID: {self.user.id})')
+        print('------')
 
-client.run("OTQxMzYxMjA0NTIwMTczNjE5.YgU08A.Lhu4PSPLN7r5F-7LseT434GIzr8")
+    async def on_message(self, message):
+        # we do not want the bot to reply to itself
+        if message.author.id == self.user.id:
+            return
+
+        if message.content.startswith('!hello'):
+            await message.reply('Hello!', mention_author=True)
+
+client = MyClient()
+client.run('OTQxMzY2MTc5NTM1MTQyOTgy.YgU5kg.xpwrcvd_SS-qcGsJKYjDkPINP_4')
