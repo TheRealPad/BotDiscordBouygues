@@ -1,4 +1,3 @@
-
 import discord
 
 class MyClient(discord.Client):
@@ -15,4 +14,4 @@ class MyClient(discord.Client):
             await message.reply('Hello!', mention_author=True)
 
 client = MyClient()
-client.run('OTQxMzY2MTc5NTM1MTQyOTgy.YgU5kg.xpwrcvd_SS-qcGsJKYjDkPINP_4')
+client.run('OTQxMzY2MTc5NTM1MTQyOTgy.YgU5kg.SLqmirFN8vhNzUuqb1uE2IIf-gI')
