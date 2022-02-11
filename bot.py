@@ -43,7 +43,8 @@ async def printDebit(message):
     if isLink == FALSE:
         await message.reply('Not link with your Bouygues Telecom account', mention_author=True)
         return
-    await message.reply('Futur API où l\'on aurai accés au débit actuel', mention_author=False)
+    channel = client.get_channel(941335733636038656)
+    await channel.send(file=discord.File('screen_exemple/speed_test.png'))
 
 async def isLinkAccount(message):
     global isLink
