@@ -1,50 +1,68 @@
-from dis import disco
-from email import message
 from pickle import FALSE
 import discord
 import http.client
 import json
 
+from datetime import date
+
 client = discord.Client()
 
-async def printConso(message, link):
-    if link == FALSE:
-        await message.reply('Compte pas lié avec Bouygues', mention_author=True)
+isLink = False
+
+def numOfDays(date1, date2):
+    return (date2-date1).days
+
+async def printConso(message):
+    if isLink == FALSE:
+        await message.reply('Not link with your Bouygues Telecom account', mention_author=True)
         return
     data = getConso()[0]
     data = data["mainDataUsage"]
-    str = "["
+    strResult = "["
     consoTotal = int(data["limitBytes"])
     conso = int(data["usageBytes"])
+    data = data["renewDate"].split("T")
+    actualDate = data[0]
+    date1 = date(2018, 12, 13)
+    date2 = date(2019, 2, 25)
+    resultDate = numOfDays(date1, date2)
+    strDate = "Restart " + actualDate + " (" + str(resultDate) + " days)\n"
     pourcentage = (conso / consoTotal) * 100
     for i in range (50):
         if i < pourcentage / 2:
-            str += '+'
+            strResult += '■'
         else:
-            str += '   '
-    str += "]"
-    await message.reply('Voici t\'a conso bg:\n' + str, mention_author=False)
+            strResult += '   '
+    strResult += "]"
+    await message.reply(strDate + 'Actual consommation: ' + str(pourcentage)[:5] + '%\n' + strResult, mention_author=True)
 
 async def printInfo(message):
-    await message.reply('Voici les commandes:\n\tconso\n\tdebit\n\tlink\n\tchange', mention_author=False)
+    await message.reply('All commands:\n\tconso\n\tdebit\n\tlink\n\tchange', mention_author=False)
 
-async def printDebit(message, link):
-    if link == FALSE:
-        await message.reply('Compte pas lié avec Bouygues', mention_author=True)
+async def printDebit(message):
+    if isLink == FALSE:
+        await message.reply('Not link with your Bouygues Telecom account', mention_author=True)
         return
-    await message.reply('Voici t\'on debit bg', mention_author=False)
+    await message.reply('Futur API où l\'on aurai accés au débit actuel', mention_author=False)
 
-async def isLink(message, link):
-    if link == True:
-        await message.reply('Compte Discord lié avec compte Bouygues ;)', mention_author=False)
+async def isLinkAccount(message):
+    global isLink
+
+    if isLink == True:
+        await message.reply('You are already link with your Bouygues Telecom account ;)', mention_author=True)
     else:
-        await message.reply('Ton compte n\'est pas lié mon reuf', mention_author=False)
+        con = validEmail(getToken(), "OLGA.GORSHKOVA1_AP4@GMAIL.COM")
+        if con == False:
+            await message.reply('Not link with your Bouygues Telecom account', mention_author=True)
+        else:
+            await message.reply('You are know link with your Bouygues Telecom account ;)', mention_author=True)
+            isLink = True                
 
-async def makeChange(message, link):
-    if link == FALSE:
-        await message.reply('Compte pas lié avec Bouygues', mention_author=True)
+async def makeChange(message):
+    if isLink == FALSE:
+        await message.reply('Not link with your Bouygues Telecom account', mention_author=True)
         return
-    await message.reply('Voici t\'on debit bg', mention_author=False)
+    await message.reply('Possible API où on pourrait changer d\'abonnement(passer d\'un forfais 50Go a 100Go) ou bine ajouter des limites()ne pas dépasser 10Go', mention_author=False)
 
 def getToken():
     conn = http.client.HTTPSConnection("oauth2.sandbox.bouyguestelecom.fr")
@@ -79,10 +97,10 @@ def validEmail(token, mail):
         return True
 
 def getConso():
-    conn = http.client.HTTPSConnection("api.sandbox.bouyguestelecom.fr​")
+    conn = http.client.HTTPSConnection("api.sandbox.bouyguestelecom.fr")
     payload = ''
     headers = {
-      'Authorization': 'Bearer at-5e656c71-6239-4b6f-af52-c80a4458bad8'
+      'Authorization': 'Bearer at-04371118-fd12-4084-848c-85c4aed4bac2'
     }
     conn.request("GET", "/ap4/customer-management/v1/usage-consumptions/mobile-data", payload, headers)
     res = conn.getresponse()
@@ -92,6 +110,9 @@ def getConso():
 
 class MyClient(discord.Client):
     async def on_ready(self):
+        global isLink
+
+        isLink = validEmail(getToken(), "OLGA.GORSHKOVA1_AP4@GMAIL.COM")
         if validEmail(getToken(), "OLGA.GORSHKOVA1_AP4@GMAIL.COM") == False:
             exit()
         print(f'Logged in as {self.user} (ID: {self.user.id})')
@@ -100,7 +121,6 @@ class MyClient(discord.Client):
     async def on_message(self, message):
         if message.author.id == self.user.id:
             return
-        link = validEmail(getToken(), "OLGA.GORSHKOVA1_AP4@GMAIL.COM")
         if message.content.startswith('!hello'):
             #mail = message.author.name
             #print(discord.ClientUser.email)
@@ -108,13 +128,13 @@ class MyClient(discord.Client):
             #await message.reply(mail, mention_author=True)
             await message.reply('Hello!', mention_author=True)
         elif message.content.startswith('!conso'):
-            await printConso(message, link)
+            await printConso(message)
         elif message.content.startswith('!debit'):
-            await printDebit(message, link)
+            await printDebit(message)
         elif message.content.startswith('!link'):
-            await isLink(message, link)
+            await isLinkAccount(message)
         elif message.content.startswith('!change'):
-            await makeChange(message, link)
+            await makeChange(message)
         elif message.content.startswith('!h'):
             await printInfo(message)
 
