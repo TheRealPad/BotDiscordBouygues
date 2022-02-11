@@ -1,8 +1,11 @@
+from dis import disco
 from email import message
 from pickle import FALSE
 import discord
 import http.client
 import json
+
+client = discord.Client()
 
 async def printConso(message, link):
     if link == FALSE:
@@ -51,8 +54,8 @@ def getToken():
     conn.request("POST", "/ap4/token", payload, headers)
     res = conn.getresponse()
     data = res.read()
-    lol = json.loads(data.decode("utf-8"))["access_token"]
-    return lol
+    token = json.loads(data.decode("utf-8"))["access_token"]
+    return token
 
 def validEmail(token, mail):
     conn = http.client.HTTPSConnection("open.api.sandbox.bouyguestelecom.fr")
@@ -85,6 +88,10 @@ class MyClient(discord.Client):
             return
         link = validEmail(getToken(), "OLGA.GORSHKOVA1_AP4@GMAIL.COM")
         if message.content.startswith('!hello'):
+            #mail = message.author.name
+            #print(discord.ClientUser.email)
+            #print(dir(message.author))
+            #await message.reply(mail, mention_author=True)
             await message.reply('Hello!', mention_author=True)
         elif message.content.startswith('!conso'):
             await printConso(message, link)
@@ -98,4 +105,4 @@ class MyClient(discord.Client):
             await printInfo(message)
 
 client = MyClient()
-client.run('OTQxMzY2MTc5NTM1MTQyOTgy.YgU5kg.Jch0PTsGVUKjMt11AdJV12kQNqw')
+client.run(open('botLogin').read())
