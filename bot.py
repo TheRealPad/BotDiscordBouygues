@@ -43,7 +43,7 @@ async def printDebit(message):
     if isLink == FALSE:
         await message.reply('Not link with your Bouygues Telecom account', mention_author=True)
         return
-    channel = client.get_channel(941335733636038656)
+    channel = client.get_channel(941708490068611112)
     await channel.send(file=discord.File('screen_exemple/speed_test.png'))
 
 async def isLinkAccount(message):
@@ -63,7 +63,8 @@ async def makeChange(message):
     if isLink == FALSE:
         await message.reply('Not link with your Bouygues Telecom account', mention_author=True)
         return
-    await message.reply('Possible API où on pourrait changer d\'abonnement(passer d\'un forfais 50Go a 100Go) ou bine ajouter des limites()ne pas dépasser 10Go', mention_author=False)
+    channel = client.get_channel(941708490068611112)
+    await channel.send(file=discord.File('screen_exemple/Limite.png'))
 
 def getToken():
     conn = http.client.HTTPSConnection("oauth2.sandbox.bouyguestelecom.fr")
@@ -101,7 +102,7 @@ def getConso():
     conn = http.client.HTTPSConnection("api.sandbox.bouyguestelecom.fr")
     payload = ''
     headers = {
-      'Authorization': 'Bearer at-583ca345-e387-4d17-9e1d-3fc0788d7e5e'
+      'Authorization': 'Bearer at-eb536463-44b0-471d-87bc-1d475d9f302a'
     }
     conn.request("GET", "/ap4/customer-management/v1/usage-consumptions/mobile-data", payload, headers)
     res = conn.getresponse()
