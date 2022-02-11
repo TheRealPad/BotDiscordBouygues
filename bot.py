@@ -11,9 +11,11 @@ async def printConso(message, link):
     if link == FALSE:
         await message.reply('Compte pas lié avec Bouygues', mention_author=True)
         return
+    data = getConso()[0]
+    data = data["mainDataUsage"]
     str = "["
-    consoTotal = 100
-    conso = 50
+    consoTotal = int(data["limitBytes"])
+    conso = int(data["usageBytes"])
     pourcentage = (conso / consoTotal) * 100
     for i in range (50):
         if i < pourcentage / 2:
@@ -75,6 +77,18 @@ def validEmail(token, mail):
     else:
         #print('Good customer')
         return True
+
+def getConso():
+    conn = http.client.HTTPSConnection("api.sandbox.bouyguestelecom.fr​")
+    payload = ''
+    headers = {
+      'Authorization': 'Bearer at-5e656c71-6239-4b6f-af52-c80a4458bad8'
+    }
+    conn.request("GET", "/ap4/customer-management/v1/usage-consumptions/mobile-data", payload, headers)
+    res = conn.getresponse()
+    data = res.read()
+    token = json.loads(data.decode("utf-8"))["usages"]
+    return token
 
 class MyClient(discord.Client):
     async def on_ready(self):
